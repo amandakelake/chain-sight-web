@@ -2,6 +2,8 @@ import { BellRing, Brain, Shield, Sparkles } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
+import { DevOpsStatusCard } from "./_components/devops-status-card";
+
 const SETUP_STEPS = [
   {
     title: "1. 定义监控范围",
@@ -81,6 +83,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <DevOpsStatusCard />
 
       <div className="grid gap-4 md:grid-cols-2">
         {SETUP_STEPS.map((step) => (
