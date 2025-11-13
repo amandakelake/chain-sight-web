@@ -25,7 +25,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 安装 Node 并开启缓存
+      # 安装 pnpm CLI（这里只安装工具，不安装依赖）
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          # 指定 pnpm 版本
+          version: 9
+          # 禁止在此步骤自动安装依赖
+          run_install: false
+
+      # 安装 Node 并开启缓存（此时 pnpm 已就绪，可供缓存逻辑探测）
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -33,13 +42,8 @@ jobs:
           node-version: '20'
           # 缓存 pnpm 下载内容
           cache: 'pnpm'
-
-      # 安装 pnpm CLI
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          # 指定 pnpm 版本
-          version: 10
+          # 指定锁文件，提升缓存命中率
+          cache-dependency-path: pnpm-lock.yaml
 
       # 根据锁文件安装依赖
       - name: Install deps
