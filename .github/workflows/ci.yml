@@ -1,0 +1,54 @@
+# GitHub Actions 中展示的工作流名称
+name: CI
+
+# 触发工作流的事件
+on:
+  # push 到指定分支时触发
+  push:
+    # push 触发的目标分支
+    branches: [ dev, main ]
+  # 针对指定分支的 PR 也会触发
+  pull_request:
+    # PR 触发的目标分支
+    branches: [ dev, main ]
+
+# 定义各个 Job
+jobs:
+  # 唯一 Job：负责构建与校验
+  build-and-test:
+    # 使用 GitHub 托管的 Ubuntu 运行器
+    runs-on: ubuntu-latest
+
+    # Job 中的顺序步骤
+    steps:
+      # 检出代码
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 安装 Node 并开启缓存
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # 指定 Node 版本
+          node-version: '20'
+          # 缓存 pnpm 下载内容
+          cache: 'pnpm'
+
+      # 安装 pnpm CLI
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          # 指定 pnpm 版本
+          version: 10
+
+      # 根据锁文件安装依赖
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # 运行 Lint 保障代码质量
+      - name: Lint
+        run: pnpm lint
+
+      # 构建产物以验证是否可编译
+      - name: Test build
+        run: pnpm build
